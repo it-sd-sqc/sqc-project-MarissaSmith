@@ -1,6 +1,6 @@
-# My Project: A Text Analysis Tool
+# My Project: Text Insights Explorer
 
-A tool that extracts and analyzes textual data from Project Gutenberg books to provide insights.
+An application designed for retrieving text from Gutenberg books.
 
 ## Data source
 
