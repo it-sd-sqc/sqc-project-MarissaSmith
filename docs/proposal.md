@@ -14,7 +14,7 @@ An application designed for retrieving text from Gutenberg books.
 
 ## Proposed layout
 
-![Proposed Layout](../docs/layout.png "Sample Layout")
+![Proposed Layout](../docs/layout.svg "Sample Layout")
 
 ## ER Diagrams
 ```mermaid

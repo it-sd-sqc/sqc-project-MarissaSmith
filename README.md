@@ -1,4 +1,4 @@
-# Your project name
-Your given and family name.
+# Pride and Prejudice by Jane Austen
 
-A one-sentence description of your project.
+
+Extracts textual data from gitenberg.org
