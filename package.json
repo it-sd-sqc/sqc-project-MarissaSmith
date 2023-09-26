@@ -8,7 +8,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "jasmine && standard \"**/*.js\" && html-validate \"*.html\" && stylelint \"**/*.css\""
+    "test": "jasmine && standard \"**/*.js\" && html-validate \"*.html\" && stylelint \"**/*.css\"",
+    "generate": "node ./tools/html-to-sql.js && psql -U postgres -f ./docs/generated-schema.sql -q"
   },
   "standard": {
     "env": [
@@ -27,6 +28,7 @@
     "stylelint-config-standard": "^34.0.0"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "svgoban": "^1.0.0"
   }
 }

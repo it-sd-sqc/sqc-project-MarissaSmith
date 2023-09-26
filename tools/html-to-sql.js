@@ -1,48 +1,91 @@
-// Import required modules using ES module syntax
-import { readFileSync, writeFileSync } from 'fs';
-import { parse } from 'node-html-parser';
+// Dependencies
+import { readFileSync, openSync, closeSync, writeFileSync } from 'fs'
+import { parse } from 'node-html-parser'
 
-// Load and parse the HTML file
-const htmlFilePath = 'C:\\Users\\msmit\\OneDrive\\Documents\\CVTC\\SQC\\sqc-project-MarissaSmith\\data\\PrideandPrejudice.htm';
- 
-const html = readFileSync(htmlFilePath, 'utf8'); 
-const root = parse(html);
+// Configuration
+const srcPath = 'data/1342-h.htm' // Adjust the path to your HTML file
+const dstPath = 'docs/generated-schema.sql'
 
-// Select elements with the id "pg-header"
-const books = root.querySelectorAll('#pg-header');
-const chapters = root.querySelectorAll('a.pginternal');
-const texts = root.querySelectorAll('body'); 
+// Utility functions
+const extractBooksAndChapters = (root) => {
+  const books = []
+  const chapters = []
 
-// Process and generate SQL statements for Books
-let sqlStatementsBooks = '';
-books.forEach((book) => {
-  const bookTitle = book.querySelector('#pg-machine-header > p:nth-child(1) > strong:nth-child(1)').text; 
-  const bookAuthor = book.querySelector('#pg-header-authlist > p:nth-child(1)').text; 
-  const publicationDate = book.querySelector('#pg-machine-header > p:nth-child(3)').text; 
+  // Extract books and chapters
+  const bookElements = root.querySelectorAll('.book')
+  bookElements.forEach((bookElement) => {
+    const bookTitle = bookElement.querySelector('.book-title').text
+    const chaptersElement = bookElement.querySelector('.chapters')
+    const chapterElements = chaptersElement.querySelectorAll('.chapter')
 
-  const insertSql = `INSERT INTO Books (title, author, publication_date) VALUES ('${bookTitle}', '${bookAuthor}', '${publicationDate}');`;
-  sqlStatementsBooks += insertSql + '\n';
-});
+    books.push({ title: bookTitle })
 
-// Process and generate SQL statements for Chapters
-let sqlStatementsChapters = '';
-chapters.forEach((chapter) => {
-  const chapterTitle = chapter.querySelector('').text; 
-  const bookId = chapter.querySelector('').text; 
+    chapterElements.forEach((chapterElement) => {
+      const chapterTitle = chapterElement.querySelector('.chapter-title').text
+      const chapterContent = chapterElement.querySelector('.chapter-content').text
 
-  const insertSql = `INSERT INTO Chapters (title, book_id) VALUES ('${chapterTitle}', ${bookId});`;
-  sqlStatementsChapters += insertSql + '\n';
-});
+      chapters.push({
+        bookTitle,
+        title: chapterTitle,
+        content: chapterContent
+      })
+    })
+  })
 
-// Process and generate SQL statements for Texts
-let sqlStatementsTexts = '';
-texts.forEach((text) => {
-  const content = text.querySelector('').text; 
-  const chapterId = text.querySelector('').text; 
+  return { books, chapters }
+}
 
-  const insertSql = `INSERT INTO Texts (content, chapter_id) VALUES ('${content}', ${chapterId});`;
-  sqlStatementsTexts += insertSql + '\n';
-});
+// Conversion
+try {
+  const src = readFileSync(srcPath, 'utf8')
+  const domRoot = parse(src)
 
-// Write SQL statements to a file
-fs.writeFileSync('./docs/generated-schema.sql', sqlStatementsBooks + sqlStatementsChapters + sqlStatementsTexts, 'utf8');
+  // Extract book and chapter data
+  const { books, chapters } = extractBooksAndChapters(domRoot)
+
+  // Output the data as SQL
+  const fd = openSync(dstPath, 'w')
+
+  // Create SQL schema
+  // Drop existing tables if they exist
+  writeFileSync(fd, 'DROP TABLE IF EXISTS chapters CASCADE;\n')
+  writeFileSync(fd, 'DROP TABLE IF EXISTS books CASCADE;\n\n')
+
+  // Create the "books" table
+  writeFileSync(fd, '-- Create the "books" table\n')
+  writeFileSync(fd, 'CREATE TABLE books (\n')
+  writeFileSync(fd, '  id SERIAL PRIMARY KEY,\n')
+  writeFileSync(fd, '  title TEXT NOT NULL\n')
+  writeFileSync(fd, ');\n\n')
+
+  // Create the "chapters" table
+  writeFileSync(fd, '-- Create the "chapters" table\n')
+  writeFileSync(fd, 'CREATE TABLE chapters (\n')
+  writeFileSync(fd, '  id SERIAL PRIMARY KEY,\n')
+  writeFileSync(fd, '  title TEXT NOT NULL,\n')
+  writeFileSync(fd, '  book_title TEXT NOT NULL,\n')
+  writeFileSync(fd, '  content TEXT NOT NULL\n')
+  writeFileSync(fd, ');\n\n')
+
+  // Insert book data
+  books.forEach((book) => {
+    const { title } = book
+    writeFileSync(
+      fd,
+      `INSERT INTO "Books" ("title") VALUES ('${title}');\n`
+    )
+  })
+
+  // Insert chapter data
+  chapters.forEach((chapter) => {
+    const { title, bookTitle, content } = chapter
+    writeFileSync(
+      fd,
+      `INSERT INTO "Chapters" ("title", "bookTitle", "content") VALUES ('${title}', '${bookTitle}', '${content}');\n`
+    )
+  })
+
+  closeSync(fd)
+} catch (error) {
+  console.error('An error occurred:', error)
+}
