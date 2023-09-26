@@ -1,3 +1,5 @@
+document.addEventListener('DOMContentLoaded', function () {
+  // Your JavaScript code here
 const button = document.getElementById('myButton')
 const body = document.body // Get the body element
 
@@ -12,3 +14,4 @@ button.addEventListener('click', function () {
     body.classList.add('dark-mode');
   }
 })
+});
