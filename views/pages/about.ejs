@@ -1,3 +1,4 @@
+<!-- about.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,11 +21,11 @@
     <button class="dark-mode-toggle" id="myButton">Toggle Dark Mode</button>
   </header>
   <main>
-    <p>My name is Marissa.</p>
-    <p>You can find my GitHub repository at <a href="https://github.com/MarissaSmith">https://github.com/MarissaSmith</a>.</p>
+    <p>My name is <%= name %>.</p>
+    <p>You can find my GitHub repository at <a href="<%= githubUrl %>"><%= githubUrl %></a>.</p>
   </main>
   <footer>
-    <p>&copy; 2023 My Site</p>
+    <p>&copy; <%= currentYear %> My Site</p>
   </footer>
 </body>
 </html>

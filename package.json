@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "jasmine && standard \"**/*.js\" && html-validate \"*.html\" && stylelint \"**/*.css\"",
-    "generate": "node ./tools/html-to-sql.js && psql -U postgres -f ./docs/generated-schema.sql -q"
+    "generate": "node ./tools/html-to-sql.js && psql -U postgres -f ./docs/generated-schema.sql -q",
+    "start": "node server.js"
   },
   "standard": {
     "env": [
@@ -20,6 +21,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "eslint": "^8.51.0",
     "html-validate": "^8.4.0",
     "jasmine": "^5.1.0",
     "node-html-parser": "^6.1.9",
@@ -29,6 +31,7 @@
   },
   "dependencies": {
     "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
     "express": "^4.18.2",
     "pg": "^8.11.3",
     "svgoban": "^1.0.0"
