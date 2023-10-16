@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to My Site</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <script src="darklightmode.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Welcome to My Site</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </nav>
+    <!-- Add a dark mode toggle button -->
+    <button class="dark-mode-toggle" id="myButton">Toggle Dark Mode</button>
+  </header>
+  <main>
+    <!-- Create a container for the chapters -->
+    <div id="chapters-container"></div>
+  </main>
+  <footer>
+    <p>&copy; 2023 My Site</p>
+  </footer>
+
+  <script>
+    // Function to fetch and display chapters
+    async function fetchAndDisplayChapters() {
+      try {
+        const response = await fetch('/chapters'); // Send a GET request to your server's /chapters route
+        const chapters = await response.json();
+
+        const chaptersContainer = document.getElementById('chapters-container');
+
+        chapters.forEach((chapter) => {
+          const chapterElement = document.createElement('div');
+          chapterElement.innerHTML = `
+            <h2>${chapter.title}</h2>
+            <p>${chapter.content}</p>
+          `;
+          chaptersContainer.appendChild(chapterElement);
+        });
+      } catch (error) {
+        console.error('Error fetching chapters:', error);
+      }
+    }
+
+    // Call the function to fetch and display chapters when the page loads
+    window.addEventListener('load', fetchAndDisplayChapters);
+  </script>
+</body>
+</html>
+
